@@ -1,3 +1,24 @@
+---
+title: "Ken's Proj"
+author: "Ken Chen"
+date: ""
+output: 
+  html_document:
+    fig_height: 7
+    fig_width: 10
+---
+<!-- Don't edit in between this line and the one below -->
+```{r include=FALSE}
+# Don't delete this chunk if you are using the DataComputing package
+library(DataComputing)
+```
+*Source file* 
+```{r, results='asis', echo=FALSE}
+includeSourceDocuments()
+```
+<!-- Don't edit the material above this line -->
+
+```{r}
 library(DataComputing)
 library(XML)
 
@@ -174,3 +195,5 @@ KarmaByDay <-
 
 KarmaByDay %>%
   ggplot(aes(x = day_of_year, y = total_karma)) + geom_point()
+```
+
