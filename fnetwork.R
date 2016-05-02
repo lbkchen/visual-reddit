@@ -2,6 +2,8 @@
 # NETWORK OF COMMENTS AND POSTS IN TOP 10 SUBREDDITS #
 ######################################################
 
+# DECEMBER 2014
+
 library(DataComputing)
 library(igraph)
 library(network)
@@ -25,20 +27,16 @@ Comments <- read.file(paste(filepath, "CommentSample_10k.csv", sep=""))
 
 Posts <-
   Posts %>%
-  mutate(retrieved_on = as.POSIXct(retrieved_on, origin="1970-01-01"), 
-         created_utc = as.POSIXct(created_utc, origin="1970-01-01"), 
-         created = as.POSIXct(created, origin="1970-01-01")) %>%
   select(created_utc, author, title, subreddit, subreddit_id, 
-         id, name, gilded, ups, downs, num_comments, retrieved_on, over_18) %>%
-  mutate(karma = ups - downs, 
+         id, name, gilded, ups, downs, num_comments) %>%
+  mutate(created_utc = as.POSIXct(created_utc, origin="1970-01-01"),
+         karma = ups - downs,
          hour = lubridate::hour(created_utc), 
          day_of_year = lubridate::yday(created_utc), 
          day_of_week = lubridate::wday(created_utc, label = TRUE), 
          morning = hour < 12,
          working_hours = hour > 8 & hour < 18, 
          gilded = as.factor(gilded))
-
-
 
 # Cleaning up comments
 
@@ -52,11 +50,10 @@ Posts <-
 
 Comments <-
   Comments %>%
-  mutate(created_utc = as.POSIXct(created_utc, origin="1970-01-01"),
-         retrieved_on = as.POSIXct(retrieved_on, origin="1970-01-01")) %>%
   select(created_utc, author, body, name, id, parent_id, subreddit, subreddit_id, 
          ups, downs, gilded) %>%
-  mutate(karma = ups - downs,
+  mutate(created_utc = as.POSIXct(created_utc, origin="1970-01-01"),
+         karma = ups - downs,
          hour = lubridate::hour(created_utc), 
          day_of_year = lubridate::yday(created_utc), 
          day_of_week = lubridate::wday(created_utc, label = TRUE), 
@@ -64,13 +61,74 @@ Comments <-
 
 # Gathering top 10 subreddits, based on total post karma in the year 2014
 TopTenSubs <- Posts %>%
-  # filter(year(created_utc) == 2014 & subreddit != "") %>% # uncomment to filter year 2014
   group_by(subreddit) %>%
   summarize(total_karma = sum(karma), 
             subreddit_id = head(subreddit_id, 1)) %>%
   arrange(desc(total_karma)) %>%
   head(10)
 
-# Table of all nodes
+SPosts <- Posts %>% filter(subreddit %in% TopTenSubs$subreddit)
+SComments <- Comments %>% filter(subreddit %in% TopTenSubs$subreddit)
 
-Nodes <- 
+# Table of all nodes
+NetworkPosts <-
+  SPosts %>%
+  select(id, subreddit, subreddit_id, title, karma, gilded) %>%
+  mutate(type = "post", 
+         parent_id = NA)
+
+NetworkSubreddits <-
+  SPosts %>%
+  group_by(subreddit) %>%
+  summarize(id = head(subreddit_id, 1)) %>%
+  mutate(type = "subreddit", 
+         subreddit_id = NA, 
+         title = NA,
+         karma = NA, 
+         gilded = NA, 
+         parent_id = NA)
+
+NetworkComments <-
+  SComments %>%
+  select(id, parent_id, subreddit, subreddit_id, karma, gilded) %>%
+  mutate(title = NA, 
+         type = "comment", 
+         parent_id = gsub(pattern = "^t[[:digit:]][[:punct:]]", "", parent_id))
+
+NetworkNodes <- NetworkPosts %>% rbind(NetworkSubreddits) %>% rbind(NetworkComments)
+
+# Table of all edges
+
+# Subreddits to posts
+NetworkEdgesA <- 
+  NetworkPosts %>%
+  select(from = subreddit_id, to = id, weight = karma)
+
+# Posts to comments
+NetworkEdgesB <-
+  NetworkComments %>%
+  select(from = parent_id, to = id, weight = karma)
+
+NetworkEdges <- rbind(NetworkEdgesA, NetworkEdgesB)
+
+# Network graph
+redditNetwork <- graph.data.frame(NetworkEdges, NetworkNodes, directed=T) %>%
+  simplify(remove.multiple = F, remove.loops = T) 
+colors <- c("tomato", "gold")
+V(redditNetwork)$color <- colors[ifelse(V(redditNetwork)$type == "subreddit", 1, 2)] %>%
+  adjustcolor(alpha.f = 0.6)
+V(redditNetwork)$size <- ifelse(V(redditNetwork)$type == "subreddit", 
+                                3, 
+                                1 + V(redditNetwork)$karma / 1000)
+plot(redditNetwork, 
+     vertex.frame.color = adjustcolor("white", alpha.f = 0), 
+     edge.color = adjustcolor("#616161", alpha.f = 0.6), 
+     edge.arrow.size = 0.05, 
+     edge.arrow.width = 0.05, 
+     edge.lty = 1, 
+     edge.width = 0.5, 
+     edge.curved = 0.5, 
+     vertex.label = NA, 
+     main = "Network baby", 
+     sub = "too many subreddits wtf")
+  
