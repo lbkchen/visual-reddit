@@ -174,3 +174,34 @@ KarmaByDay <-
 
 KarmaByDay %>%
   ggplot(aes(x = day_of_year, y = total_karma)) + geom_point()
+
+
+
+# Effin swag network graph of top subreddits and their posts
+
+# Table of all nodes
+NetworkPosts <-
+  Posts %>%
+  select(id, subreddit, subreddit_id, title, karma, gilded) %>%
+  mutate(type = "post")
+
+NetworkSubreddits <-
+  Posts %>%
+  group_by(subreddit) %>%
+  summarize(id = head(subreddit_id, 1)) %>%
+  mutate(type = "subreddit", 
+         subreddit_id = NA, 
+         title = NA,
+         karma = NA, 
+         gilded = NA)
+
+NetworkNodes <- rbind(NetworkPosts, NetworkSubreddits)
+
+# Table of all edges
+NetworkEdges <-
+  NetworkPosts %>%
+  select(from = subreddit_id, to = id, weight = karma)
+
+# Network
+redditNetwork <- graph.data.frame(NetworkEdges, NetworkNodes, directed=T)
+plot(redditNetwork, vertex.size = 5, edge.arrow.size = 2, vertex.label = NA)
