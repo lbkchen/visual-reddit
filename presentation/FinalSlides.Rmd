@@ -21,3 +21,7 @@ Due to the extremely large size of the files, Google BigQuery, a SQL data queryi
 Time of post, post title, author, subreddit forum, karma (upvotes - downvotes), number of comments, and post/comment id's
 
 - **Time Period:** December 2014
+
+- **Methods:** 
+    - In class: data wrangling (glyph-ready frames), data cleaning, ggplot, gandalf/batch commands, regex
+    - Additional: igraph (network visualization), network, adjacency lists, BigQuery (Google cloud), SQL, bigrquery
