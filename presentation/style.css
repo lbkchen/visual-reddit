@@ -1,0 +1,19 @@
+h1 {
+  color : #ff5700;
+}
+
+h1 em {
+  color : #474747;
+}
+
+#main-title i {
+  color : #474747;
+}
+
+.emphasis {
+  color : #9494ff;
+}
+
+ul strong {
+  color : #9494ff;
+}
