@@ -1,5 +1,7 @@
 library(DataComputing)
 library(XML)
+library(igraph)
+library(network)
 
 filepath <- "/Users/kenchen/MDST/visual_reddit/"
 Posts <- read.file(paste(filepath, "PostSample_10k.csv", sep=""))
@@ -38,6 +40,27 @@ Posts <-
          gilded = as.factor(gilded))
 
 
+# Cleaning up comments
+
+# Comment variables
+# [1] "body"                   "score_hidden"           "archived"               "name"                  
+# [5] "author"                 "author_flair_text"      "downs"                  "created_utc"           
+# [9] "subreddit_id"           "link_id"                "parent_id"              "score"                 
+# [13] "retrieved_on"           "controversiality"       "gilded"                 "id"                    
+# [17] "subreddit"              "ups"                    "distinguished"          "author_flair_css_class"
+# [21] "removal_reason"        
+
+Comments <-
+  Comments %>%
+  mutate(created_utc = as.POSIXct(created_utc, origin="1970-01-01"),
+         retrieved_on = as.POSIXct(retrieved_on, origin="1970-01-01")) %>%
+  select(created_utc, author, body, name, id, parent_id, subreddit, subreddit_id, 
+         ups, downs, gilded) %>%
+  mutate(karma = ups - downs,
+         hour = lubridate::hour(created_utc), 
+         day_of_year = lubridate::yday(created_utc), 
+         day_of_week = lubridate::wday(created_utc, label = TRUE), 
+         gilded = as.factor(gilded))
 
 # Some general stuff about karma thresholds:
 #   - controversial: < 0 karma
@@ -174,3 +197,51 @@ KarmaByDay <-
 
 KarmaByDay %>%
   ggplot(aes(x = day_of_year, y = total_karma)) + geom_point()
+
+
+
+# Effin swag network graph of top subreddits and their posts
+
+# Table of all nodes
+NetworkPosts <-
+  Posts %>%
+  select(id, subreddit, subreddit_id, title, karma, gilded) %>%
+  mutate(type = "post")
+
+NetworkSubreddits <-
+  Posts %>%
+  group_by(subreddit) %>%
+  summarize(id = head(subreddit_id, 1)) %>%
+  mutate(type = "subreddit", 
+         subreddit_id = NA, 
+         title = NA,
+         karma = NA, 
+         gilded = NA)
+
+NetworkNodes <- rbind(NetworkPosts, NetworkSubreddits)
+
+# Table of all edges
+NetworkEdges <-
+  NetworkPosts %>%
+  select(from = subreddit_id, to = id, weight = karma)
+
+# Network
+redditNetwork <- graph.data.frame(NetworkEdges, NetworkNodes, directed=T) %>%
+  simplify(remove.multiple = F, remove.loops = T) 
+colors <- c("tomato", "gold")
+V(redditNetwork)$color <- colors[ifelse(V(redditNetwork)$type == "subreddit", 1, 2)] %>%
+  adjustcolor(alpha.f = 0.6)
+V(redditNetwork)$size <- ifelse(V(redditNetwork)$type == "subreddit", 
+                                3, 
+                                1 + V(redditNetwork)$karma / 1000)
+plot(redditNetwork, 
+     vertex.frame.color = adjustcolor("white", alpha.f = 0), 
+     edge.color = adjustcolor("#616161", alpha.f = 0.6), 
+     edge.arrow.size = 0.05, 
+     edge.arrow.width = 0.05, 
+     edge.lty = 1, 
+     edge.width = 0.5, 
+     edge.curved = 0.5, 
+     vertex.label = NA, 
+     main = "Network baby", 
+     sub = "too many subreddits wtf")
