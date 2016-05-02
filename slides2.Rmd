@@ -1,0 +1,59 @@
+---
+title: "Untitled"
+author: "Christian Choi"
+date: "May 1, 2016"
+output: slidy_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Analysis of Reddit Karma 
+
+
+- Question: 
+
+How does Reddit Karma vary across various metrics?
+
+- DataSets: 
+
+CSV files of Reddit posts and comments in various subreddit forums
+
+https://www.kaggle.com/reddit/reddit-comments-may-2015 
+
+https://archive.org/details/2015_reddit_comments_corpus
+
+
+- Key Variables of Interest: 
+
+Time of Post, Post Title, Author, Subreddit Forum, Karma (Upvotes - Downvotes),Number of Comments
+
+- Time Period:
+
+May 2015
+
+- Google BigQuery
+
+Due to the extremely large size of the files, Google BigQuery, a SQL data querying cloud platform was used to quickly process large enough samples from our datasets
+
+![ ](/Users/Chris/Documents/reddit-logo.png)
+
+
+## Getting up
+
+- Turn off alarm
+- Get out of bed
+
+
+## Breakfast
+
+- Eat eggs
+- Drink coffee
+
+# In the evening
+
+## Dinner
+
+- Eat spaghetti
+- Drink wine
