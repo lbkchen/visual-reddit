@@ -19,7 +19,6 @@ includeSourceDocuments()
 <!-- Don't edit the material above this line -->
 
 ```{r}
-library(DataComputing)
 library(XML)
 
 filepath <- "/Users/kenchen/MDST/visual_reddit/"
