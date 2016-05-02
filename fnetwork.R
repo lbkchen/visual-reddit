@@ -128,13 +128,17 @@ NetworkEdgesB <-
   NetworkComments %>%
   select(from = parent_id, to = id, weight = karma)
 
-NetworkEdges <- rbind(NetworkEdgesA, NetworkEdgesB)
+NetworkEdges <- rbind(NetworkEdgesA, NetworkEdgesB) %>%
+  filter(from %in% NetworkNodes$id & to %in% NetworkNodes$id)
 
+
+# post = 1, subreddit = 2, comment = 3
 # Network graph
 redditNetwork <- graph.data.frame(NetworkEdges, NetworkNodes, directed=T) %>%
   simplify(remove.multiple = F, remove.loops = T) 
-colors <- c("tomato", "gold")
-V(redditNetwork)$color <- colors[ifelse(V(redditNetwork)$type == "subreddit", 1, 2)] %>%
+colors <- c("#9494ff", "#ff5700", "#336699")
+V(redditNetwork)$color <- colors[ifelse(V(redditNetwork)$type == "post", 1,
+                                        ifelse(V(redditNetwork)$type == "subreddit", 2, 3))] %>%
   adjustcolor(alpha.f = 0.6)
 V(redditNetwork)$size <- ifelse(V(redditNetwork)$type == "subreddit", 
                                 3, 
