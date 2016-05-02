@@ -1,5 +1,7 @@
 library(DataComputing)
 library(XML)
+library(igraph)
+library(network)
 
 filepath <- "/Users/kenchen/MDST/visual_reddit/"
 Posts <- read.file(paste(filepath, "PostSample_10k.csv", sep=""))
@@ -203,5 +205,23 @@ NetworkEdges <-
   select(from = subreddit_id, to = id, weight = karma)
 
 # Network
-redditNetwork <- graph.data.frame(NetworkEdges, NetworkNodes, directed=T)
-plot(redditNetwork, vertex.size = 5, edge.arrow.size = 2, vertex.label = NA)
+redditNetwork <- graph.data.frame(NetworkEdges, NetworkNodes, directed=T) %>%
+  simplify(remove.multiple = F, remove.loops = T) 
+# V(net)$size <- 3 * degree(redditNetwork, mode="all")
+colors <- c("tomato", "gold")
+V(redditNetwork)$color <- colors[ifelse(V(redditNetwork)$type == "subreddit", 1, 2)] %>%
+  adjustcolor(alpha.f = 0.6)
+V(redditNetwork)$size <- ifelse(V(redditNetwork)$type == "subreddit", 
+                                3, 
+                                1 + V(redditNetwork)$karma / 1000)
+plot(redditNetwork, 
+     vertex.frame.color = adjustcolor("white", alpha.f = 0), 
+     edge.color = adjustcolor("#616161", alpha.f = 0.6), 
+     edge.arrow.size = 0.05, 
+     edge.arrow.width = 0.05, 
+     edge.lty = 1, 
+     edge.width = 0.5, 
+     edge.curved = 0.5, 
+     vertex.label = NA, 
+     main = "Network baby", 
+     sub = "too many subreddits wtf")
