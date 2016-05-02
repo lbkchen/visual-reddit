@@ -143,6 +143,9 @@ V(redditNetwork)$color <- colors[ifelse(V(redditNetwork)$type == "post", 1,
 V(redditNetwork)$size <- ifelse(V(redditNetwork)$type == "subreddit", 
                                 3, 
                                 1 + V(redditNetwork)$karma / 1000)
+
+plot.dir <- paste(getwd(), "/Plots.pdf", sep="")
+pdf(plot.dir)
 plot(redditNetwork, 
      vertex.frame.color = adjustcolor("white", alpha.f = 0), 
      edge.color = adjustcolor("#616161", alpha.f = 0.6), 
@@ -154,4 +157,5 @@ plot(redditNetwork,
      vertex.label = NA, 
      main = "Network baby", 
      sub = "too many subreddits wtf")
+dev.off()
   

@@ -14,7 +14,7 @@ knit        : slidify::knit2slides
 ## Analysis of Reddit Karma 
 
 
-![](reddit-logo.png)
+![](/home/samzhou/Pictures/GoogleEarthQuakes.png)
 
 - Question: 
 
