@@ -40,6 +40,27 @@ Posts <-
          gilded = as.factor(gilded))
 
 
+# Cleaning up comments
+
+# Comment variables
+# [1] "body"                   "score_hidden"           "archived"               "name"                  
+# [5] "author"                 "author_flair_text"      "downs"                  "created_utc"           
+# [9] "subreddit_id"           "link_id"                "parent_id"              "score"                 
+# [13] "retrieved_on"           "controversiality"       "gilded"                 "id"                    
+# [17] "subreddit"              "ups"                    "distinguished"          "author_flair_css_class"
+# [21] "removal_reason"        
+
+Comments <-
+  Comments %>%
+  mutate(created_utc = as.POSIXct(created_utc, origin="1970-01-01"),
+         retrieved_on = as.POSIXct(retrieved_on, origin="1970-01-01")) %>%
+  select(created_utc, author, body, name, id, parent_id, subreddit, subreddit_id, 
+         ups, downs, gilded) %>%
+  mutate(karma = ups - downs,
+         hour = lubridate::hour(created_utc), 
+         day_of_year = lubridate::yday(created_utc), 
+         day_of_week = lubridate::wday(created_utc, label = TRUE), 
+         gilded = as.factor(gilded))
 
 # Some general stuff about karma thresholds:
 #   - controversial: < 0 karma
@@ -207,7 +228,6 @@ NetworkEdges <-
 # Network
 redditNetwork <- graph.data.frame(NetworkEdges, NetworkNodes, directed=T) %>%
   simplify(remove.multiple = F, remove.loops = T) 
-# V(net)$size <- 3 * degree(redditNetwork, mode="all")
 colors <- c("tomato", "gold")
 V(redditNetwork)$color <- colors[ifelse(V(redditNetwork)$type == "subreddit", 1, 2)] %>%
   adjustcolor(alpha.f = 0.6)
