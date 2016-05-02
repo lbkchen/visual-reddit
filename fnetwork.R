@@ -1,17 +1,36 @@
+list.of.packages <- c("bigrquery", "ggplot2", "dplyr", "lubridate", "mosaic", "tidyr", "knitr", "beepr", "igraph", "network")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
+
+library(bigrquery)
+library(ggplot2)
+library(mosaic)
+library(knitr)
+library(tidyr)
+library(dplyr)
+library(lubridate)
+
+projectID = "elated-coil-129122"
+
+sqlPosts = "SELECT subreddit, ups, downs, num_comments, title, gilded, created_utc, author, subreddit_id, id, name
+FROM [Reddit.AllPosts]
+WHERE YEAR(SEC_TO_TIMESTAMP(INTEGER(created_utc))) == 2014 and MONTH(SEC_TO_TIMESTAMP(INTEGER(created_utc))) == 4 and score > 10"
+
+sqlComments = "SELECT author, ups, downs, subreddit, created_utc, name, id, parent_id, subreddit_id, gilded
+FROM [Reddit.2014Comments]
+WHERE YEAR(SEC_TO_TIMESTAMP(INTEGER(created_utc))) == 2014 and MONTH(SEC_TO_TIMESTAMP(INTEGER(created_utc))) == 4 and score > 30"
+
+Posts = query_exec(query = sqlPosts, project = projectID, max_pages = Inf)
+Comments = query_exec(query = sqlComments, project = projectID, max_pages = Inf)
+
+
 ######################################################
 # NETWORK OF COMMENTS AND POSTS IN TOP 10 SUBREDDITS #
 ######################################################
 
 # DECEMBER 2014
-
-library(DataComputing)
 library(igraph)
 library(network)
-
-filepath <- "/Users/kenchen/MDST/visual_reddit/"
-Posts <- read.file(paste(filepath, "PostSample_10k.csv", sep=""))
-Comments <- read.file(paste(filepath, "CommentSample_10k.csv", sep=""))
-
 # Cleaning up Posts
 
 # Post variables
@@ -29,7 +48,7 @@ Posts <-
   Posts %>%
   select(created_utc, author, title, subreddit, subreddit_id, 
          id, name, gilded, ups, downs, num_comments) %>%
-  mutate(created_utc = as.POSIXct(created_utc, origin="1970-01-01"),
+  mutate(created_utc = as.POSIXct(as.numeric(created_utc), origin="1970-01-01"),
          karma = ups - downs,
          hour = lubridate::hour(created_utc), 
          day_of_year = lubridate::yday(created_utc), 
@@ -50,9 +69,9 @@ Posts <-
 
 Comments <-
   Comments %>%
-  select(created_utc, author, body, name, id, parent_id, subreddit, subreddit_id, 
+  select(created_utc, author, name, id, parent_id, subreddit, subreddit_id, 
          ups, downs, gilded) %>%
-  mutate(created_utc = as.POSIXct(created_utc, origin="1970-01-01"),
+  mutate(created_utc = as.POSIXct(as.numeric(created_utc), origin="1970-01-01"),
          karma = ups - downs,
          hour = lubridate::hour(created_utc), 
          day_of_year = lubridate::yday(created_utc), 
