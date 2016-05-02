@@ -1,0 +1,25 @@
+---
+title: "Final Slides"
+author: "Swag Team"
+date: "May 2, 2016"
+output: 
+  slidy_presentation:
+    css: style.css
+    font_adjustment: -1
+---
+
+## Analysis of achieving success on Reddit {#main-title}
+
+### By the Swaglords
+
+- **Question:** How does Reddit Karma vary across various metrics?
+
+- **DataSets:** Google BigQuery
+
+Due to the extremely large size of the files, Google BigQuery, a SQL data querying cloud platform was used to quickly process large enough samples from our datasets
+
+- **Key Variables of Interest:**
+
+Time of post, post title, author, subreddit forum, karma (upvotes - downvotes), number of comments, and post/comment id's
+
+- **Time Period:** December 2014
