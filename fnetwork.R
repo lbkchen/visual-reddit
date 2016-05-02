@@ -132,30 +132,46 @@ NetworkEdges <- rbind(NetworkEdgesA, NetworkEdgesB) %>%
   filter(from %in% NetworkNodes$id & to %in% NetworkNodes$id)
 
 
-# post = 1, subreddit = 2, comment = 3
+# post = 1, subreddit = 2 "#336699", comment = 3
 # Network graph
-redditNetwork <- graph.data.frame(NetworkEdges, NetworkNodes, directed=T) %>%
+redditNetwork <- graph.data.frame(NetworkEdges, 
+                                  NetworkNodes %>% mutate(subreddit = 
+                                    ifelse(type == "subreddit", subreddit, "")), 
+                                  directed=T) %>%
   simplify(remove.multiple = F, remove.loops = T) 
-colors <- c("#9494ff", "#ff5700", "#336699")
+colors <- c("#9494ff", "#ff4500", "#ff5700")
 V(redditNetwork)$color <- colors[ifelse(V(redditNetwork)$type == "post", 1,
                                         ifelse(V(redditNetwork)$type == "subreddit", 2, 3))] %>%
-  adjustcolor(alpha.f = 0.6)
+  adjustcolor(alpha.f = 0.8)
 V(redditNetwork)$size <- ifelse(V(redditNetwork)$type == "subreddit", 
-                                3, 
+                                5, 
                                 1 + V(redditNetwork)$karma / 1000)
+
 
 plot.dir <- paste(getwd(), "/Plots.pdf", sep="")
 pdf(plot.dir)
+set.seed(62169869)
 plot(redditNetwork, 
+     layout=layout.lgl, 
      vertex.frame.color = adjustcolor("white", alpha.f = 0), 
-     edge.color = adjustcolor("#616161", alpha.f = 0.6), 
-     edge.arrow.size = 0.05, 
-     edge.arrow.width = 0.05, 
+     edge.color = adjustcolor("#ff5700", alpha.f = 0.6), 
+     edge.arrow.size = 0, 
+     edge.arrow.width = 0, 
      edge.lty = 1, 
-     edge.width = 0.5, 
+     edge.width = 0.4, 
      edge.curved = 0.5, 
      vertex.label = NA, 
      main = "Network baby", 
-     sub = "too many subreddits wtf")
-dev.off()
-  
+     sub = "too many subreddits wtf",
+     vertex.label = V(redditNetwork)$subreddit, 
+     vertex.label.family = "Helvetica", 
+     vertex.label.font = 2, 
+     vertex.label.color = "#474747", 
+     vertex.label.dist = 0.3, 
+     vertex.label.degree = -pi/2,
+     main = "Network of subreddits, posts, and comments")
+
+legend(x=-1.5, y=-0.6, c("Post","Subreddit", "Comment"), pch=21,
+       col="#777777", pt.bg=colors, pt.cex=3, cex=.6, bty="n", ncol=1)
+
+dev.off()  
