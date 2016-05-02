@@ -17,3 +17,13 @@ h1 em {
 ul strong {
   color : #9494ff;
 }
+
+#results img {
+  width : 500px;
+  height : 360px;
+}
+
+#network img {
+  width : 1000px;
+  height : 600px;
+}

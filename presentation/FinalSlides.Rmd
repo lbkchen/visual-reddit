@@ -1,14 +1,17 @@
 ---
-title: "Final Slides"
-author: "Swag Team"
+title: "Analysis of achieving success on Reddit"
+author: "Snoo Squad"
 date: "May 2, 2016"
-output: 
+output:
   slidy_presentation:
     css: style.css
+    fig_width: 5
+    fig_height: 4
     font_adjustment: -1
+  beamer_presentation: default
 ---
 
-## Analysis of achieving success on Reddit *by the Swaglords* {#main-title}
+## Analysis of achieving success on Reddit *by SnooSquad* {#main-title}
 
 - **Question:** How does Reddit Karma vary across various metrics?
 
@@ -25,3 +28,15 @@ Time of post, post title, author, subreddit forum, karma (upvotes - downvotes), 
 - **Methods:** 
     - In class: data wrangling (glyph-ready frames), data cleaning, ggplot, gandalf/batch commands, regex
     - Additional: igraph (network visualization), network, adjacency lists, BigQuery (Google cloud), SQL, bigrquery
+
+
+## Network graph of interactions on Reddit {#network}
+
+![](NetworkGraphF.png)
+
+## Summary of results {#results}
+
+![](Plots-5.png) ![](Plots-3.png)
+![](Plots-7.png) ![](Plots-10.png)
+
+
