@@ -3,8 +3,8 @@ library(igraph)
 library(network)
 
 wd <- "/Users/kenchen/MDST/visual_reddit/python/"
-Posts <- read.file(paste0(wd, "postssmall.csv"))
-Comments <- read.file(paste0(wd, "commentssmall.csv"))
+Posts <- read.file(paste0(wd, "AskReddit_posts.csv"))
+Comments <- read.file(paste0(wd, "AskReddit_comments.csv"))
 
 # Cleaning up Posts and Comments
 
@@ -116,5 +116,5 @@ plot(redditNetwork,
      vertex.label.degree = -pi/2,
      main = "Network of subreddits, posts, and comments")
 
-legend(x=-1.5, y=-0.6, c("Subreddit", "Post", "Comment"), pch=21,
+legend(x=-1.2, y=-0.5, c("Subreddit", "Post", "Comment"), pch=21,
        col="#ffffff", pt.bg=colors, pt.cex=3, cex=.9, bty="n", ncol=1)

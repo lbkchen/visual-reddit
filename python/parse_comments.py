@@ -10,21 +10,20 @@ def combine_subreddits(subs):
 
 r = praw.Reddit("Network visualization data scraper v1.0 by u/k-a-n")
 
-subreddits = ["funny", "AdviceAnimals", "pics", "aww", "WTF",
-              "todayilearned", "gaming", "videos", "gifs", "leagueoflegends"]
+subreddits = ["funny"]
 
 # Getting top [limit] posts from multi-reddit defined from subreddits above
 top_subreddits = r.get_subreddit(combine_subreddits(subreddits))
-top_posts = top_subreddits.get_top_from_all(limit=25)
+top_posts = top_subreddits.get_top_from_all(limit=10)
 
 # Write posts csv table
-with open('postssmall.csv', 'wb') as csv_posts:
+with open('funny_posts.csv', 'wb') as csv_posts:
     post_attrs = ["id", "subreddit_id", "subreddit", "author", "title", "created_utc", "ups", "downs", "gilded"]
     pwriter = csv.writer(csv_posts, delimiter=',')
     pwriter.writerow(post_attrs)
 
     # Write comments csv table
-    with open('commentssmall.csv', 'wb') as csv_comments:
+    with open('funny_comments.csv', 'wb') as csv_comments:
         comment_attrs = ["id", "parent_id", "subreddit", "author", "created_utc", "ups", "downs", "gilded"]
         cwriter = csv.writer(csv_comments, delimiter=',')
         cwriter.writerow(comment_attrs)
