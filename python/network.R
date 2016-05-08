@@ -3,8 +3,8 @@ library(igraph)
 library(network)
 
 wd <- "/Users/kenchen/MDST/visual_reddit/python/"
-Posts <- read.file(paste0(wd, "postssmall.csv"))
-Comments <- read.file(paste0(wd, "commentssmall.csv"))
+# Posts <- read.file(paste0(wd, "postssmall.csv"))
+# Comments <- read.file(paste0(wd, "commentssmall.csv"))
 
 # Cleaning up Posts and Comments
 
@@ -54,7 +54,19 @@ NetworkNodes <- NetworkSubreddits %>% rbind(NetworkPosts) %>% rbind(NetworkComme
 
 # Creating table of network adjacencies
 
-SubredditEdges <- data.frame(from = c("t5_2qh33"), to = c("t5_2qh0u"), weight = c(50000), created_utc = NA)
+SubredditEdges <- data.frame(from = c(), to = c(), weight = c(), created_utc = c())
+
+for (i in 1:nrow(NetworkSubreddits)) {
+  for (j in i:nrow(NetworkSubreddits)) {
+    if (i != j) {
+      SubredditEdges <- SubredditEdges %>% rbind(
+        data.frame(from = c(NetworkSubreddits$id[i]), 
+                   to = c(NetworkSubreddits$id[j]), 
+                   weight = c(NetworkSubreddits$karma[i]), created_utc = NA)
+      )
+    }
+  }
+}
 
 NetworkEdges <- NetworkNodes %>%
   filter(type != 1) %>%
@@ -69,30 +81,40 @@ redditNetwork <- graph.data.frame(NetworkEdges,
                                   directed = T) %>%
   simplify(remove.multiple = F, remove.loops = T)
 
-colors <- c("#ff4500", "#9494ff", "#ff5700")
-V(redditNetwork)$color <- colors[V(redditNetwork)$type] %>% adjustcolor(alpha.f = 0.8)
+colors <- c("#557BED", "#F2E11F", "#FA6C23")
+V(redditNetwork)$color <- colors[V(redditNetwork)$type] %>% adjustcolor(alpha.f = 0.66)
+
+max_subreddit_karma <- max((V(redditNetwork)[type==1])$karma)
+max_post_karma <- max((V(redditNetwork)[type==2])$karma)
+max_comment_karma <- max((V(redditNetwork)[type==3])$karma)
 
 V(redditNetwork)$size <- ifelse(V(redditNetwork)$type == 1, 
-                                # 10, 
-                                5 + V(redditNetwork)$karma / 30000, 
-                                1 + V(redditNetwork)$karma / 5000)
+                                5 + 8 * V(redditNetwork)$karma / max_subreddit_karma, # subreddit
+                                ifelse(V(redditNetwork)$type == 2, 
+                                       2 + 6 * V(redditNetwork)$karma / max_post_karma, # post
+                                       0.55 + 2.5 * V(redditNetwork)$karma / max_comment_karma)) # comment
 
+max_weight <- max(E(redditNetwork)$weight)
+E(redditNetwork)$width <- 0.5 + 7 * E(redditNetwork)$weight / max_weight
+
+set.seed(44414693)
 plot(redditNetwork, 
      layout=layout.lgl, 
-     vertex.frame.color = adjustcolor("white"), 
-     edge.color = adjustcolor("#ff5700", alpha.f = 0.6), 
+     vertex.frame.color = NA, 
+     edge.color = adjustcolor("#FFA373", alpha.f = 0.66), 
      edge.arrow.size = 0, 
      edge.arrow.width = 0, 
      edge.lty = 1, 
-     edge.width = 0.6, 
+     # edge.width = 0.6, 
      edge.curved = 0.1, 
      vertex.label = V(redditNetwork)$subreddit, 
      vertex.label.family = "Helvetica", 
      vertex.label.font = 2, 
+     vertex.label.cex= 0.9, 
      vertex.label.color = "#474747", 
-     vertex.label.dist = 0.3, 
+     vertex.label.dist = 0.2, 
      vertex.label.degree = -pi/2,
      main = "Network of subreddits, posts, and comments")
 
 legend(x=-1.5, y=-0.6, c("Subreddit", "Post", "Comment"), pch=21,
-       col="#ffffff", pt.bg=colors, pt.cex=3, cex=.6, bty="n", ncol=1)
+       col="#ffffff", pt.bg=colors, pt.cex=3, cex=.9, bty="n", ncol=1)

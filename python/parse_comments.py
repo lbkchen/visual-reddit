@@ -15,7 +15,7 @@ subreddits = ["funny", "AdviceAnimals", "pics", "aww", "WTF",
 
 # Getting top [limit] posts from multi-reddit defined from subreddits above
 top_subreddits = r.get_subreddit(combine_subreddits(subreddits))
-top_posts = top_subreddits.get_top_from_all(limit=3)
+top_posts = top_subreddits.get_top_from_all(limit=25)
 
 # Write posts csv table
 with open('postssmall.csv', 'wb') as csv_posts:
@@ -34,7 +34,7 @@ with open('postssmall.csv', 'wb') as csv_posts:
             pwriter.writerow([getattr(post, attr) for attr in post_attrs])
 
             # Replace MoreComments objects with more Comments (expand comment tree deeper)
-            post.replace_more_comments(limit=post.num_comments // 200)
+            post.replace_more_comments(limit=post.num_comments // 100)
             post_comments = praw.helpers.flatten_tree(post.comments)
 
             # Write all Comment objects in the flattened comment tree
