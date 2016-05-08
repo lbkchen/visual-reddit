@@ -3,8 +3,8 @@ library(igraph)
 library(network)
 
 wd <- "/Users/kenchen/MDST/visual_reddit/python/"
-# Posts <- read.file(paste0(wd, "postssmall.csv"))
-# Comments <- read.file(paste0(wd, "commentssmall.csv"))
+Posts <- read.file(paste0(wd, "postssmall.csv"))
+Comments <- read.file(paste0(wd, "commentssmall.csv"))
 
 # Cleaning up Posts and Comments
 
@@ -92,16 +92,16 @@ V(redditNetwork)$size <- ifelse(V(redditNetwork)$type == 1,
                                 5 + 8 * V(redditNetwork)$karma / max_subreddit_karma, # subreddit
                                 ifelse(V(redditNetwork)$type == 2, 
                                        2 + 6 * V(redditNetwork)$karma / max_post_karma, # post
-                                       0.55 + 2.5 * V(redditNetwork)$karma / max_comment_karma)) # comment
+                                       0.25 + 2.8 * V(redditNetwork)$karma / max_comment_karma)) # comment
 
 max_weight <- max(E(redditNetwork)$weight)
-E(redditNetwork)$width <- 0.5 + 7 * E(redditNetwork)$weight / max_weight
+E(redditNetwork)$width <- 0.4 + 7 * E(redditNetwork)$weight / max_weight
 
 set.seed(44414693)
 plot(redditNetwork, 
      layout=layout.lgl, 
      vertex.frame.color = NA, 
-     edge.color = adjustcolor("#FFA373", alpha.f = 0.66), 
+     edge.color = adjustcolor("#FFC3A3", alpha.f = 0.66), 
      edge.arrow.size = 0, 
      edge.arrow.width = 0, 
      edge.lty = 1, 
@@ -110,7 +110,7 @@ plot(redditNetwork,
      vertex.label = V(redditNetwork)$subreddit, 
      vertex.label.family = "Helvetica", 
      vertex.label.font = 2, 
-     vertex.label.cex= 0.9, 
+     vertex.label.cex= 0.8, 
      vertex.label.color = "#474747", 
      vertex.label.dist = 0.2, 
      vertex.label.degree = -pi/2,
