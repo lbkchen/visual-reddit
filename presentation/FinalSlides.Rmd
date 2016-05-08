@@ -7,7 +7,7 @@ output:
     css: style.css
     fig_width: 5
     fig_height: 4
-    font_adjustment: -1
+    font_adjustment: +1
   beamer_presentation: default
 ---
 
