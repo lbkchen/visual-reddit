@@ -10,7 +10,7 @@ def combine_subreddits(subs):
 
 r = praw.Reddit("Network visualization data scraper v1.0 by u/k-a-n")
 
-subreddits = ["funny"]
+subreddits = ["pics"]
 
 # Getting top [limit] posts from multi-reddit defined from subreddits above
 top_subreddits = r.get_subreddit(combine_subreddits(subreddits))
