@@ -1,0 +1,50 @@
+---
+title: "Analysis of achieving success on Reddit"
+author: "Snoo Squad"
+date: "May 2, 2016"
+output:
+  slidy_presentation:
+    css: style.css
+    fig_width: 2
+    fig_height: 1
+    font_adjustment: +1
+  beamer_presentation: default
+---
+
+
+## Analysis of achieving success on Reddit *by SnooSquad* {#main-title}
+
+- **Question:** How does Reddit Karma vary across various metrics?
+
+- **DataSets:** Google BigQuery
+
+Due to the extremely large size of the files, Google BigQuery, a SQL data querying cloud platform was used to quickly process large enough samples from our datasets
+
+- **Key Variables of Interest:**
+
+Time of post, post title, author, subreddit forum, karma (upvotes - downvotes), number of comments, and post/comment id's
+
+- **Time Period:** December 2014
+
+- **Methods:** 
+    - In class: data wrangling (glyph-ready frames), data cleaning, ggplot, gandalf/batch commands, regex
+    - Additional: igraph (network visualization), network, adjacency lists, BigQuery (Google cloud), SQL, bigrquery
+
+
+## Network graph of interactions on Reddit {#network}
+
+![](../python/network25v3zoom.png)
+
+In this network, subreddits are blue, posts are yellow, and comments are orange. It can be seen that comments have both broad and deep tree-like connections.
+
+## Summary of results {#results}
+
+![caption 1](Plots-5.png) ![caption 2](Plots-3.png)
+
+The general trend shows that posts with shorter titles achieved greater karma. \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Average karma per post seems to peak at 5 UTC.
+
+![caption 3](Plots-7.png) ![caption 3](Plots-10.png) 
+
+Subreddit forums pics, funny, and aww had the most viral posts. \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ It appears that between the hours of 5 and 15 is when karma peaks.
+                      
+

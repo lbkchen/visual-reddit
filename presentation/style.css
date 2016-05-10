@@ -23,6 +23,10 @@ ul strong {
   height : 340px;
 }
 
+#results p {
+  font-size: 13px;
+}
+
 #network img {
   width : 1000px;
   height : 600px;
